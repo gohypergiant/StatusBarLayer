@@ -49,7 +49,6 @@ myStatusBar = new StatusBarLayer
 	# Behavior
 	hide: <boolean> # initial visibility
 	autoHide: <boolean> # hide in landscape where relevant
-	onCall: <boolean>
 	
 	# Set @1x, @2x or @3x -- usually unnecessary
 	scaleFactor: <number> (1 || 2 || 3)
