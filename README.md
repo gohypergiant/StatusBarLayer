@@ -4,6 +4,10 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](.github/CONTRIBUTING.md)
 [![Maintenance](https://img.shields.io/maintenance/yes/2017.svg)]()
 
+The StatusBarLayer module allows you to instantly generate an accurate status bar for your iPhone and iPad app prototypes. Appearance and status items are customizable, and the module will mimic iOS orientation-switch behavior according to device type. Events which affect the status bar, such as calls, may also be simulated.
+
+<img src="https://cloud.githubusercontent.com/assets/935/23085407/44d08096-f52d-11e6-8d31-d9745537438b.gif" width="497" style="display: block; margin: auto" alt="StatusBarLayer preview" />
+
 ### Installation
 
 #### Manual Installation
