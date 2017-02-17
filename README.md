@@ -59,6 +59,12 @@ myStatusBar = new StatusBarLayer
 myStatusBar.startCall(message, color) # <string>, <string> (hex or rgba)
 myStatusBar.stopCall()
 ```
+
+#### Show and hide
+```coffeescript
+myStatusBar.show()
+myStatusBar.hide()
+```
 		
 #### Check visibility and call status
 ```coffeescript
