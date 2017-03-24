@@ -279,7 +279,7 @@ class StatusBarLayer extends Layer
 			wifi.x = carrier.x + carrier._element.children[0].offsetWidth + wifiMargin
 			# Center current time and on-call
 			time.width = Screen.width
-			onCall.width = Screen.width
+			onCallBlock.width = Screen.width
 			onCallMessage.width = Screen.width
 			# Right-side items
 			if @options.powered == true
