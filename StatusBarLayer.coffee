@@ -32,7 +32,7 @@
 		
 		# Simulate call
 		myStatusBar.startCall(message, color) # <string>, <string> (hex or rgba)
-		myStatusBar.stopCall()
+		myStatusBar.endCall()
 		
 		# Check visibility and call status
 		print myStatusBar.hidden
@@ -357,7 +357,7 @@ class StatusBarLayer extends Layer
 				if @options.onCall == true
 					onCallMessage.html = message
 
-		@stopCall = () =>
+		@endCall = () =>
 			@options.onCall = false
 			onCallMessage.html = ""
 			onCall.animate
