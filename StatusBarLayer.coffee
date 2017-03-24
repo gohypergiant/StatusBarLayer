@@ -63,10 +63,10 @@ class StatusBarLayer extends Layer
 		@options.onCall ?= false
 		@options.vibrant ?= false
 		@options.scaleFactor ?= if _.includes(Framer.Device.deviceType, "plus") then 3 else 2
-		
+
 		@options.scaleFactor = @options.scaleFactor / 2
 		super @options
-		
+
 		getTopMargin = () =>
 			switch @options.scaleFactor
 				when 1.5 then return 17
@@ -78,7 +78,7 @@ class StatusBarLayer extends Layer
 				when 1.5 then return 6
 				when 0.5 then return 5
 				else return 2
-				
+
 		statusBarHeight = 40 * @options.scaleFactor
 		topMargin = getTopMargin()
 		onCallMargin = topMargin + (39 * @options.scaleFactor)
@@ -91,9 +91,9 @@ class StatusBarLayer extends Layer
 		alarmMargin = 13 * @options.scaleFactor
 		locationMargin = 12 * @options.scaleFactor
 		ipodMargin = 12 * @options.scaleFactor
-		
+
 		@.height = statusBarHeight
-		
+
 		if @options.ipod == true
 			@options.carrier = "iPod"
 			@options.signal = false
@@ -102,7 +102,7 @@ class StatusBarLayer extends Layer
 			batteryColor = batteryGreen
 		else
 			batteryColor = @options.foregroundColor
-		
+
 		getBatteryLevel = (defaultBatteryWidth) =>
 			percentageWidth = @options.percent / 100 * defaultBatteryWidth
 			return percentageWidth
@@ -112,12 +112,14 @@ class StatusBarLayer extends Layer
 		batterySVG = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 49 #{19 * getSVGFactor()}'><path d='M41.5,0H3.5A3.5,3.5,0,0,0,0,3.5v12A3.5,3.5,0,0,0,3.5,19h38A3.5,3.5,0,0,0,45,15.5V3.5A3.5,3.5,0,0,0,41.5,0ZM44,15.5A2.5,2.5,0,0,1,41.5,18H3.5A2.5,2.5,0,0,1,1,15.5V3.5A2.5,2.5,0,0,1,3.5,1h38A2.5,2.5,0,0,1,44,3.5Z' fill='#{@options.foregroundColor}' /><rect x='2' y='2' width='#{getBatteryLevel(41)}' height='15' rx='1.5' ry='1.5' fill='#{batteryColor}' id='batteryFill' /><path d='M46,6v7a3.28,3.28,0,0,0,3-3.5A3.28,3.28,0,0,0,46,6Z' fill='#{@options.foregroundColor}'/></svg>"
 		batterySVG3x = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 73 #{29 * getSVGFactor()}'><path d='M62,0H5A5,5,0,0,0,0,5V24a5,5,0,0,0,5,5H62a5,5,0,0,0,5-5V5A5,5,0,0,0,62,0Zm4,24a4,4,0,0,1-4,4H5a4,4,0,0,1-4-4V5A4,4,0,0,1,5,1H62a4,4,0,0,1,4,4Z' fill='#{@options.foregroundColor}' /><rect x='2' y='2' width='#{getBatteryLevel(63)}' height='25' rx='3' ry='3' fill='#{batteryColor}' id='batteryFill' /><path d='M69,10.06v9.89A4.82,4.82,0,0,0,73,15,4.82,4.82,0,0,0,69,10.06Z' fill='#{@options.foregroundColor}' /></svg>"
 		powerSVG = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 #{19 * getSVGFactor()}'><polygon points='11 7.5 5.86 7.5 8 0 0 10.5 4.96 10.5 2 19 11 7.5' fill='#{@options.foregroundColor}' /></svg>"
-		
-		onCall = new Layer
+
+		onCallBlock = new Layer
 			parent: @
-			name: "onCall"
+			name: "onCallBlock"
 			height: statusBarHeight
-			
+
+		@.onCallBlock = onCallBlock
+
 		onCallMessage = new Layer
 			parent: @
 			name: "onCallMessage"
@@ -129,6 +131,8 @@ class StatusBarLayer extends Layer
 				"font-size" : "#{18 * @options.scaleFactor}pt"
 				"font-weight" : "#{fontWeight}"
 				"text-align" : "center"
+				
+		@.onCallMessage = onCallMessage
 
 		carrier = new Layer
 			parent: @
@@ -142,6 +146,8 @@ class StatusBarLayer extends Layer
 				"font-size" : "#{18 * @options.scaleFactor}pt"
 				"font-weight" : "#{fontWeight}"
 
+		@.carrier = carrier
+
 		signal = new Layer
 			parent: @
 			name: "signal"
@@ -150,6 +156,8 @@ class StatusBarLayer extends Layer
 			y: Align.center
 			html: signalSVG
 
+		@.signal = signal
+
 		wifi = new Layer
 			parent: @
 			name: "wifi"
@@ -157,6 +165,8 @@ class StatusBarLayer extends Layer
 			width: 25 * @options.scaleFactor
 			height: 18 * @options.scaleFactor
 			html: wifiSVG
+
+		@.wifi = wifi
 
 		getTime = () =>
 			today = new Date
@@ -184,6 +194,8 @@ class StatusBarLayer extends Layer
 				"font-weight" : "#{timeFontWeight}"
 				"text-align" : "center"
 
+		@.time = time
+
 		power = new Layer
 			parent: @
 			name: "power"
@@ -192,6 +204,8 @@ class StatusBarLayer extends Layer
 			height: 19 * @options.scaleFactor
 			html: powerSVG
 
+		@.power = power
+
 		battery = new Layer
 			parent: @
 			name: "battery"
@@ -199,6 +213,8 @@ class StatusBarLayer extends Layer
 			width: 49 * @options.scaleFactor
 			height: 19 * @options.scaleFactor
 			html: if @options.scaleFactor == 1 then batterySVG else batterySVG3x
+
+		@.battery = battery
 
 		percentage = new Layer
 			parent: @
@@ -212,7 +228,9 @@ class StatusBarLayer extends Layer
 				"font-size" : "#{18 * @options.scaleFactor}pt"
 				"font-weight" : "#{fontWeight}"
 				"text-align" : "right"
-			
+
+		@.percentage = percentage
+
 		for layer in @.subLayers
 			layer.backgroundColor = "clear"
 
@@ -329,8 +347,8 @@ class StatusBarLayer extends Layer
 				@.backgroundColor = barColor
 				@.style =
 					"-webkit-backdrop-filter": "blur(60px)"
-					
-						
+
+
 		@applyStyle = (style = @options.style, foregroundColor = @options.foregroundColor, backgroundColor = @options.backgroundColor) =>
 			if style == "light" && foregroundColor == ""
 				foregroundColor = "black"
@@ -339,28 +357,28 @@ class StatusBarLayer extends Layer
 			styleBar(style, backgroundColor)
 			colorForeground(foregroundColor)
 			colorBattery()
-			
+
 		@applyStyle()
 
 		@startCall = (message = "Touch to return to call 0:30", color = onCallColor) =>
 			@options.onCall = true
 			colorForeground("white")
 			colorBattery()
-			onCall.animate
+			onCallBlock.animate
 				properties:
 					backgroundColor: color
 					opacity: 1
 					height: statusBarHeight * 2
 				time:
 					0.25
-			onCall.onAnimationEnd =>
+			onCallBlock.onAnimationEnd =>
 				if @options.onCall == true
 					onCallMessage.html = message
 
 		@endCall = () =>
 			@options.onCall = false
 			onCallMessage.html = ""
-			onCall.animate
+			onCallBlock.animate
 				properties:
 					opacity: 0
 					height: statusBarHeight
