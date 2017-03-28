@@ -69,10 +69,16 @@ class StatusBarLayer extends Layer
 
 		getTopMargin = () =>
 			switch @options.scaleFactor
-				when 1.5 then return 17
-				when 0.5 then return -4
-				else return 6
+				when 1.5 then return 8
+				when 0.5 then return 2
+				else return 5
 				
+		getBatteryMargin = () =>
+			switch @options.scaleFactor
+				when 1.5 then return 16.5
+				when 0.5 then return 5
+				else return 11
+			
 		getSVGFactor = () =>
 			switch @options.scaleFactor
 				when 1.5 then return 6
@@ -81,16 +87,20 @@ class StatusBarLayer extends Layer
 
 		statusBarHeight = 40 * @options.scaleFactor
 		topMargin = getTopMargin()
-		onCallMargin = topMargin + (39 * @options.scaleFactor)
+		onCallMargin = topMargin + (37 * @options.scaleFactor)
 		signalMargin = 13 * @options.scaleFactor
 		carrierMargin = 9 * @options.scaleFactor
-		wifiMargin = 12 * @options.scaleFactor
+		wifiMargin = if _.includes(Framer.Device.deviceType, "plus") then 8 * @options.scaleFactor else 12 * @options.scaleFactor
 		powerMargin = 11 * @options.scaleFactor
-		batteryMargin = 5 * @options.scaleFactor
 		percentageMargin = 6 * @options.scaleFactor
 		alarmMargin = 13 * @options.scaleFactor
 		locationMargin = 12 * @options.scaleFactor
 		ipodMargin = 12 * @options.scaleFactor
+		baseFontSize = 24
+		onCallFontSize = 27
+		letterSpacing = if _.includes(Framer.Device.deviceType, "plus") then 2 else 0
+		onCallLetterSpacing = 0
+		onCallWordSpacing = 8
 
 		@.height = statusBarHeight
 
@@ -120,31 +130,30 @@ class StatusBarLayer extends Layer
 
 		@.onCallBlock = onCallBlock
 
-		onCallMessage = new Layer
+		onCallMessage = new TextLayer
 			parent: @
 			name: "onCallMessage"
-			y: onCallMargin
-			height: statusBarHeight
-			html: ""
-			style: 
-				"font-family" : "-apple-system, Helvetica, Arial, sans-serif"
-				"font-size" : "#{18 * @options.scaleFactor}pt"
-				"font-weight" : "#{fontWeight}"
-				"text-align" : "center"
+			padding:
+				top: onCallMargin
+			text: ""
+			fontSize: onCallFontSize * @options.scaleFactor
+			fontWeight: fontWeight
+			textAlign: "center"
+			color: "white"
+			letterSpacing: onCallLetterSpacing
+			wordSpacing: onCallWordSpacing
 				
 		@.onCallMessage = onCallMessage
 
-		carrier = new Layer
+		carrier = new TextLayer
 			parent: @
 			name: "carrier"
-			y: getTopMargin()
-			height: statusBarHeight
-			html: @options.carrier
-			width: Utils.textsize + 0
-			style: 
-				"font-family" : "-apple-system, Helvetica, Arial, sans-serif"
-				"font-size" : "#{18 * @options.scaleFactor}pt"
-				"font-weight" : "#{fontWeight}"
+			padding:
+				top: getTopMargin()
+			text: @options.carrier
+			fontSize: baseFontSize * @options.scaleFactor 
+			fontWeight: fontWeight
+			letterSpacing: letterSpacing
 
 		@.carrier = carrier
 
@@ -152,7 +161,7 @@ class StatusBarLayer extends Layer
 			parent: @
 			name: "signal"
 			width: 67 * @options.scaleFactor
-			height: 11 * @options.scaleFactor
+			height: 13 * @options.scaleFactor
 			y: Align.center
 			html: signalSVG
 
@@ -182,17 +191,17 @@ class StatusBarLayer extends Layer
 			else
 				return @options.time
 
-		time = new Layer
+		time = new TextLayer
 			parent: @
 			name: "time"
-			y: topMargin
-			height: statusBarHeight
-			html: getTime()
-			style: 
-				"font-family" : "-apple-system, Helvetica, Arial, sans-serif"
-				"font-size" : "#{18 * @options.scaleFactor}pt"
-				"font-weight" : "#{timeFontWeight}"
-				"text-align" : "center"
+			width: @.width
+			padding:
+				top: getTopMargin()
+			text: getTime()
+			fontSize: baseFontSize * @options.scaleFactor 
+			fontWeight: timeFontWeight
+			textAlign: "center"
+			letterSpacing: letterSpacing
 
 		@.time = time
 
@@ -211,23 +220,21 @@ class StatusBarLayer extends Layer
 			name: "battery"
 			y: Align.center
 			width: 49 * @options.scaleFactor
-			height: 19 * @options.scaleFactor
+			height: 18 * @options.scaleFactor
 			html: if @options.scaleFactor == 1 then batterySVG else batterySVG3x
 
 		@.battery = battery
 
-		percentage = new Layer
+		percentage = new TextLayer
 			parent: @
 			name: "percentage"
-			y: topMargin
-			height: statusBarHeight
-			html: @options.percent + "%"
-			width: Utils.textsize + 0
-			style: 
-				"font-family" : "-apple-system, Helvetica, Arial, sans-serif"
-				"font-size" : "#{18 * @options.scaleFactor}pt"
-				"font-weight" : "#{fontWeight}"
-				"text-align" : "right"
+			padding:
+				top: getTopMargin()
+			text: @options.percent + "%"
+			fontSize: baseFontSize * @options.scaleFactor 
+			fontWeight: fontWeight
+			textAlign: "right"
+			letterSpacing: letterSpacing
 
 		@.percentage = percentage
 
@@ -276,7 +283,7 @@ class StatusBarLayer extends Layer
 				wifi.visible = true
 			else
 				wifi.visible = false
-			wifi.x = carrier.x + carrier._element.children[0].offsetWidth + wifiMargin
+			wifi.x = carrier.x + carrier.width + wifiMargin
 			# Center current time and on-call
 			time.width = Screen.width
 			onCallBlock.width = Screen.width
@@ -286,15 +293,14 @@ class StatusBarLayer extends Layer
 				power.x = Align.right(-powerMargin)
 			else
 				power.x = Screen.width
-				batteryMargin = if @options.scaleFactor == 1 then 10 else 16.5
-			battery.x = power.x - battery.width - batteryMargin
+			battery.x = power.x - battery.width - getBatteryMargin()
 			if @options.showPercentage == false
 				percentageMargin = 0
-				percentage.html = ""
+				percentage.text = ""
 			else
 				percentageMargin = 6 * @options.scaleFactor
-				percentage.html = @options.percent + "%"
-			percentage.x = battery.x - percentage._element.children[0].offsetWidth - percentageMargin
+				percentage.text = @options.percent + "%"
+			percentage.x = battery.x - percentage.width - percentageMargin
 
 		getTime()
 		@layout()
@@ -373,11 +379,11 @@ class StatusBarLayer extends Layer
 					0.25
 			onCallBlock.onAnimationEnd =>
 				if @options.onCall == true
-					onCallMessage.html = message
+					onCallMessage.text = message
 
 		@endCall = () =>
 			@options.onCall = false
-			onCallMessage.html = ""
+			onCallMessage.text = ""
 			onCallBlock.animate
 				properties:
 					opacity: 0
