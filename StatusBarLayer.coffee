@@ -73,6 +73,12 @@ class StatusBarLayer extends Layer
 				when 0.5 then return 2
 				else return 5
 				
+		getOnCallMargin = () =>
+			switch @options.scaleFactor
+				when 1.5 then return 35 * @options.scaleFactor
+				when 0.5 then return 37 * @options.scaleFactor
+				else return 37 * @options.scaleFactor
+				
 		getBatteryMargin = () =>
 			switch @options.scaleFactor
 				when 1.5 then return 16.5
@@ -87,7 +93,7 @@ class StatusBarLayer extends Layer
 
 		statusBarHeight = 40 * @options.scaleFactor
 		topMargin = getTopMargin()
-		onCallMargin = topMargin + (37 * @options.scaleFactor)
+		onCallMargin = topMargin + getOnCallMargin()
 		signalMargin = 13 * @options.scaleFactor
 		carrierMargin = 9 * @options.scaleFactor
 		wifiMargin = if _.includes(Framer.Device.deviceType, "plus") then 8 * @options.scaleFactor else 12 * @options.scaleFactor
