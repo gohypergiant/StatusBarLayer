@@ -106,7 +106,7 @@ class StatusBarLayer extends Layer
 		onCallFontSize = 27
 		letterSpacing = if _.includes(Framer.Device.deviceType, "plus") then 2 else 0
 		onCallLetterSpacing = 0
-		onCallWordSpacing = 8
+		onCallWordSpacing = 0
 
 		@.height = statusBarHeight
 
