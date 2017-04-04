@@ -1,0 +1,25 @@
+{
+  "name": "@blackpixel/framer-statusbarlayer",
+  "version": "0.0.0",
+  "description": "Instantly generate an accurate status bar for your iPhone and iPad app prototypes.",
+  "homepage": "https://github.com/bpxl-labs/StatusBarLayer",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/bpxl-labs/StatusBarLayer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bpxl-labs/StatusBarLayer/issues"
+  },
+  "main": "StatusBarLayer.coffee",
+  "author": "Black Pixel",
+  "license": "MIT",
+  "keywords": [
+    "framerjs",
+    "framer",
+    "coffeescript",
+    "statusbar",
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}
