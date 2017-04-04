@@ -17,7 +17,7 @@
     "framerjs",
     "framer",
     "coffeescript",
-    "statusbar",
+    "statusbar"
   ],
   "publishConfig": {
     "access": "public"
