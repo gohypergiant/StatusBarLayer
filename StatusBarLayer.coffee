@@ -1,110 +1,118 @@
 ###
 	# USING STATUSBARLAYER
-	
+
 	# Require the module
 	StatusBarLayer = require "StatusBarLayer"
-	
+
 	myStatusBar = new StatusBarLayer
+		# iOS version
+		version: <number> (10 || 11)
+
 		# Text
 		carrier: <string>
 		time: <string> # if not set, will use local time
 		percent: <number>
-		
+
 		# Show or hide status items
 		signal: <boolean>
 		wifi: <boolean>
 		powered: <boolean>
 		showPercentage: <boolean>
 		ipod: <boolean> # also affects signal and carrier
-		
+
 		# Colors
 		style: <string> ("light" || "dark")
 		foregroundColor: <string> (hex or rgba)
 		backgroundColor: <string> (hex or rgba)
 		vibrant: <boolean>
-		
+
 		# Behavior
 		hide: <boolean> # initial visibility
 		autoHide: <boolean> # hide in landscape where device-appropriate
-		
+
 		# Set @1x, @2x or @3x -- usually unnecessary
 		scaleFactor: <number> (1 || 2 || 3)
-		
+
 		# Simulate call
 		myStatusBar.startCall(message, color) # <string>, <string> (hex or rgba)
 		myStatusBar.endCall()
-		
+
 		# Check visibility and call status
 		print myStatusBar.hidden
 		print myStatusBar.onCall
 ###
 
+defaults =
+	style: "light"
+	powered: false
+	carrier: "Carrier"
+	foregroundColor: ""
+	backgroundColor: ""
+	time: ""
+	percent: 100
+	showPercentage: true
+	wifi: true
+	signal: true
+	ipod: false
+	hide: false
+	autoHide: true
+	onCall: false
+	vibrant: false
+	version: 10
+
+# iOS 11 unfilled signal bar is 25%
+# iOS 11 battery stroke is 35%
+
 class StatusBarLayer extends Layer
 	fontWeight = 400
 	timeFontWeight = 500
-	
+
 	batteryGreen = "#4cd964"
 	onCallColor = "#4cd964"
 
 	constructor: (@options={}) ->
-		@options.style ?= "light"
-		@options.powered ?= false
-		@options.carrier ?= "Carrier"
-		@options.foregroundColor ?= ""
-		@options.backgroundColor ?= ""
-		@options.time ?= ""
-		@options.percent ?= 100
-		@options.showPercentage ?= true
-		@options.wifi ?= true
-		@options.signal ?= true
-		@options.ipod ?= false
-		@options.hide ?= false
-		@options.autoHide ?= true
-		@options.onCall ?= false
-		@options.vibrant ?= false
-		@options.scaleFactor ?= if _.includes(Framer.Device.deviceType, "plus") then 3 else 2
+		@options = _.assign({}, defaults, @options)
 
-		@options.scaleFactor = @options.scaleFactor / 2
+
+		isiPhonePlus = () ->
+			if _.includes(Framer.Device.deviceType, "plus")
+				return true
+			else
+				return false
+
 		super @options
 
 		getTopMargin = () =>
-			switch @options.scaleFactor
-				when 1.5 then return 8
-				when 0.5 then return 2
-				else return 5
-				
-		getOnCallMargin = () =>
-			switch @options.scaleFactor
-				when 1.5 then return 35 * @options.scaleFactor
-				when 0.5 then return 37 * @options.scaleFactor
-				else return 37 * @options.scaleFactor
-				
-		getBatteryMargin = () =>
-			switch @options.scaleFactor
-				when 1.5 then return 16.5
-				when 0.5 then return 5
-				else return 11
-			
-		getSVGFactor = () =>
-			switch @options.scaleFactor
-				when 1.5 then return 6
-				when 0.5 then return 5
-				else return 2
+			switch isiPhonePlus()
+				when true then return 6
+				else return 4
 
-		statusBarHeight = 40 * @options.scaleFactor
+		getOnCallMargin = () =>
+			switch isiPhonePlus()
+				when true then return 35
+				else return 38
+
+		getBatteryMargin = () =>
+			switch isiPhonePlus()
+				when true then return 16.5
+				else return 5.5
+
+
+		statusBarHeight = 20
 		topMargin = getTopMargin()
 		onCallMargin = topMargin + getOnCallMargin()
-		signalMargin = 13 * @options.scaleFactor
-		carrierMargin = 9 * @options.scaleFactor
-		wifiMargin = if _.includes(Framer.Device.deviceType, "plus") then 8 * @options.scaleFactor else 12 * @options.scaleFactor
-		powerMargin = 11 * @options.scaleFactor
-		percentageMargin = 6 * @options.scaleFactor
-		alarmMargin = 13 * @options.scaleFactor
-		locationMargin = 12 * @options.scaleFactor
-		ipodMargin = 12 * @options.scaleFactor
-		baseFontSize = 24
-		onCallFontSize = 27
-		letterSpacing = if _.includes(Framer.Device.deviceType, "plus") then 2 else 0
+		carrierMargin = 3
+		signalMargin = 6.5
+		carrierMargin = 4.5
+		wifiMargin = if isiPhonePlus() == true then 8 else 2
+		powerMargin = 5.5
+		percentageMargin = 2.5
+		alarmMargin = 6.5
+		locationMargin = 6
+		ipodMargin = 6
+		baseFontSize = 13
+		onCallFontSize = 13.5
+		letterSpacing = if isiPhonePlus() == true then 2 else 0
 		onCallLetterSpacing = 0
 		onCallWordSpacing = 0
 
@@ -123,11 +131,14 @@ class StatusBarLayer extends Layer
 			percentageWidth = @options.percent / 100 * defaultBatteryWidth
 			return percentageWidth
 
-		signalSVG = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 67 #{11 * getSVGFactor()}'><circle cx='5.5' cy='5.5' r='5.5' fill='#{@options.foregroundColor}' /><circle cx='19.5' cy='5.5' r='5.5' fill='#{@options.foregroundColor}' /><circle cx='33.5' cy='5.5' r='5.5' fill='#{@options.foregroundColor}' /><circle cx='47.5' cy='5.5' r='5.5' fill='#{@options.foregroundColor}' /><path d='M61.5,1A4.5,4.5,0,1,1,57,5.5,4.51,4.51,0,0,1,61.5,1m0-1A5.5,5.5,0,1,0,67,5.5,5.5,5.5,0,0,0,61.5,0Z' fill='#{@options.foregroundColor}' /></svg>"	
-		wifiSVG = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 25 #{18 * getSVGFactor()}'><path d='M8.59,13.63,12.5,18l3.91-4.37a5.5,5.5,0,0,0-7.82,0Zm-4-4.47,2,2.23a8.48,8.48,0,0,1,11.82,0l2-2.23a11.46,11.46,0,0,0-15.81,0ZM12.5,0A17.42,17.42,0,0,0,.6,4.7l2,2.23a14.45,14.45,0,0,1,19.81,0l2-2.23A17.42,17.42,0,0,0,12.5,0Z' fill='#{@options.foregroundColor}' /></svg>"
-		batterySVG = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 49 #{19 * getSVGFactor()}'><path d='M41.5,0H3.5A3.5,3.5,0,0,0,0,3.5v12A3.5,3.5,0,0,0,3.5,19h38A3.5,3.5,0,0,0,45,15.5V3.5A3.5,3.5,0,0,0,41.5,0ZM44,15.5A2.5,2.5,0,0,1,41.5,18H3.5A2.5,2.5,0,0,1,1,15.5V3.5A2.5,2.5,0,0,1,3.5,1h38A2.5,2.5,0,0,1,44,3.5Z' fill='#{@options.foregroundColor}' /><rect x='2' y='2' width='#{getBatteryLevel(41)}' height='15' rx='1.5' ry='1.5' fill='#{batteryColor}' id='batteryFill' /><path d='M46,6v7a3.28,3.28,0,0,0,3-3.5A3.28,3.28,0,0,0,46,6Z' fill='#{@options.foregroundColor}'/></svg>"
-		batterySVG3x = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 73 #{29 * getSVGFactor()}'><path d='M62,0H5A5,5,0,0,0,0,5V24a5,5,0,0,0,5,5H62a5,5,0,0,0,5-5V5A5,5,0,0,0,62,0Zm4,24a4,4,0,0,1-4,4H5a4,4,0,0,1-4-4V5A4,4,0,0,1,5,1H62a4,4,0,0,1,4,4Z' fill='#{@options.foregroundColor}' /><rect x='2' y='2' width='#{getBatteryLevel(63)}' height='25' rx='3' ry='3' fill='#{batteryColor}' id='batteryFill' /><path d='M69,10.06v9.89A4.82,4.82,0,0,0,73,15,4.82,4.82,0,0,0,69,10.06Z' fill='#{@options.foregroundColor}' /></svg>"
-		powerSVG = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 #{19 * getSVGFactor()}'><polygon points='11 7.5 5.86 7.5 8 0 0 10.5 4.96 10.5 2 19 11 7.5' fill='#{@options.foregroundColor}' /></svg>"
+		signalSVG = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 20'><circle cx='2.75' cy='2.75' r='2.75' fill='#{@options.foregroundColor}' /><circle cx='9.75' cy='2.75' r='2.75' fill='#{@options.foregroundColor}' /><circle cx='16.75' cy='2.75' r='2.75' fill='#{@options.foregroundColor}' /><circle cx='23.75' cy='2.75' r='2.75' fill='#{@options.foregroundColor}' /><circle cx='30.75' cy='2.75' r='2.5' stroke='#{@options.foregroundColor}' stroke-width='0.5' fill-opacity='0' class='stroked' /></svg>"
+		signal_iOS11_SVG = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 67 32'><circle cx='5.5' cy='5.5' r='5.5' fill='#{@options.foregroundColor}' /><circle cx='19.5' cy='5.5' r='5.5' fill='#{@options.foregroundColor}' /><circle cx='33.5' cy='5.5' r='5.5' fill='#{@options.foregroundColor}' /><circle cx='47.5' cy='5.5' r='5.5' fill='#{@options.foregroundColor}' /><path d='M61.5,1A4.5,4.5,0,1,1,57,5.5,4.51,4.51,0,0,1,61.5,1m0-1A5.5,5.5,0,1,0,67,5.5,5.5,5.5,0,0,0,61.5,0Z' fill='#{@options.foregroundColor}' /></svg>"
+		wifiSVG = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 36'><path d='M 8.085 13.63 L 11.995 18 L 15.905 13.63 C 13.752 11.454 10.238 11.454 8.085 13.63 Z M 4.085 9.16 L 6.085 11.39 C 9.376 8.192 14.614 8.192 17.905 11.39 L 19.905 9.16 C 15.479 4.943 8.521 4.943 4.095 9.16 Z M 11.995 0 C 7.576 0.001 3.322 1.681 0.095 4.7 L 2.095 6.93 C 7.659 1.691 16.341 1.691 21.905 6.93 L 23.905 4.7 C 20.676 1.678 16.418 -0.002 11.995 0 Z' fill='#{@options.foregroundColor}' /></svg>"
+		batterySVG = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 49 38'><rect x='0.5' y='0.5'  width='44' height='18' rx='3' ry='3' stroke='#{@options.foregroundColor}' fill-opacity='0' class='stroked' /><rect x='2' y='2' width='#{getBatteryLevel(41)}' height='15' rx='1.5' ry='1.5' fill='#{batteryColor}' id='batteryFill' /><path d='M46,6v7a3.28,3.28,0,0,0,3-3.5A3.28,3.28,0,0,0,46,6Z' fill='#{@options.foregroundColor}'/></svg>"
+		battery_iOS11_SVG = ""
+		battery3xSVG = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 73 29'><path d='M62,0H5A5,5,0,0,0,0,5V24a5,5,0,0,0,5,5H62a5,5,0,0,0,5-5V5A5,5,0,0,0,62,0Zm4,24a4,4,0,0,1-4,4H5a4,4,0,0,1-4-4V5A4,4,0,0,1,5,1H62a4,4,0,0,1,4,4Z' fill='#{@options.foregroundColor}' /><rect x='2' y='2' width='#{getBatteryLevel(63)}' height='25' rx='3' ry='3' fill='#{batteryColor}' id='batteryFill' /><path d='M69,10.06v9.89A4.82,4.82,0,0,0,73,15,4.82,4.82,0,0,0,69,10.06Z' fill='#{@options.foregroundColor}' /></svg>"
+		battery3x_iOS11_SVG = ""
+		powerSVG = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 19'><polygon points='11 7.5 5.86 7.5 8 0 0 10.5 4.96 10.5 2 19 11 7.5' fill='#{@options.foregroundColor}' /></svg>"
 
 		onCallBlock = new Layer
 			parent: @
@@ -142,13 +153,13 @@ class StatusBarLayer extends Layer
 			padding:
 				top: onCallMargin
 			text: ""
-			fontSize: onCallFontSize * @options.scaleFactor
+			fontSize: onCallFontSize
 			fontWeight: fontWeight
 			textAlign: "center"
 			color: "white"
 			letterSpacing: onCallLetterSpacing
 			wordSpacing: onCallWordSpacing
-				
+
 		@.onCallMessage = onCallMessage
 
 		carrier = new TextLayer
@@ -157,7 +168,7 @@ class StatusBarLayer extends Layer
 			padding:
 				top: getTopMargin()
 			text: @options.carrier
-			fontSize: baseFontSize * @options.scaleFactor 
+			fontSize: baseFontSize
 			fontWeight: fontWeight
 			letterSpacing: letterSpacing
 
@@ -166,10 +177,10 @@ class StatusBarLayer extends Layer
 		signal = new Layer
 			parent: @
 			name: "signal"
-			width: 67 * @options.scaleFactor
-			height: 13 * @options.scaleFactor
+			width: 34
+			height: 6
 			y: Align.center
-			html: signalSVG
+			html: if @options.version < 11 then signalSVG else signal_iOS11_SVG
 
 		@.signal = signal
 
@@ -177,8 +188,8 @@ class StatusBarLayer extends Layer
 			parent: @
 			name: "wifi"
 			y: Align.center
-			width: 25 * @options.scaleFactor
-			height: 18 * @options.scaleFactor
+			width: 13
+			height: 9
 			html: wifiSVG
 
 		@.wifi = wifi
@@ -204,7 +215,7 @@ class StatusBarLayer extends Layer
 			padding:
 				top: getTopMargin()
 			text: getTime()
-			fontSize: baseFontSize * @options.scaleFactor 
+			fontSize: baseFontSize
 			fontWeight: timeFontWeight
 			textAlign: "center"
 			letterSpacing: letterSpacing
@@ -215,8 +226,8 @@ class StatusBarLayer extends Layer
 			parent: @
 			name: "power"
 			y: Align.center
-			width: 11 * @options.scaleFactor
-			height: 19 * @options.scaleFactor
+			width: 5.5
+			height: 9.5
 			html: powerSVG
 
 		@.power = power
@@ -225,9 +236,9 @@ class StatusBarLayer extends Layer
 			parent: @
 			name: "battery"
 			y: Align.center
-			width: 49 * @options.scaleFactor
-			height: 18 * @options.scaleFactor
-			html: if @options.scaleFactor == 1 then batterySVG else batterySVG3x
+			width: 24.5
+			height: 10
+			html: if isiPhonePlus() == true then battery3xSVG else batterySVG
 
 		@.battery = battery
 
@@ -237,7 +248,7 @@ class StatusBarLayer extends Layer
 			padding:
 				top: getTopMargin()
 			text: @options.percent + "%"
-			fontSize: baseFontSize * @options.scaleFactor 
+			fontSize: baseFontSize
 			fontWeight: fontWeight
 			textAlign: "right"
 			letterSpacing: letterSpacing
@@ -276,8 +287,6 @@ class StatusBarLayer extends Layer
 			# Left-side items
 			if @options.carrier == ""
 				carrierMargin = 0
-			else
-				carrierMargin = 9 * @options.scaleFactor
 			if @options.signal == true
 				signal.visible = true
 				signal.x = signalMargin
@@ -304,26 +313,34 @@ class StatusBarLayer extends Layer
 				percentageMargin = 0
 				percentage.text = ""
 			else
-				percentageMargin = 6 * @options.scaleFactor
 				percentage.text = @options.percent + "%"
-			percentage.x = battery.x - percentage.width - percentageMargin
+			percentage.maxX = battery.x - percentageMargin
 
 		getTime()
 		@layout()
 
 		foregroundItems = [percentage, power, time, wifi, signal, carrier, battery]
 
-		colorForeground = (color = @options.foregroundColor) =>
-			if color == ""
+		selectForegroundColor = () =>
+			if @options.foregroundColor == ""
 				if @options.style == "dark"
-					color = "white"
+					return "white"
 				else
-					color = "black"
+					return "black"
+			else
+				return @options.foregroundColor
+
+		colorForeground = (color = "") =>
+			if color == "" then color = selectForegroundColor()
 			for layer in foregroundItems
 				layer.color = color
 				layerSVG = layer.querySelectorAll('path, circle, rect, polygon')
+				strokedSVG = layer.querySelectorAll('.stroked')
 				for SVG in layerSVG
 					SVG.setAttribute('fill', color)
+				for SVG in strokedSVG
+					SVG.setAttribute('stroke', color)
+					SVG.setAttribute('fill-opacity', '0')
 
 		colorBattery = () =>
 			batteryFillSVG = layer.querySelectorAll('#batteryFill')
@@ -335,14 +352,10 @@ class StatusBarLayer extends Layer
 				for SVG in batteryFillSVG
 					SVG.style.WebkitTransition = 'all 0.25s';
 					SVG.setAttribute('fill', batteryGreen)
-			else if @options.style == "dark"
-				for SVG in batteryFillSVG
-					SVG.style.WebkitTransition = 'all 0.25s';
-					SVG.setAttribute('fill', "white")
 			else
 				for SVG in batteryFillSVG
 					SVG.style.WebkitTransition = 'all 0.25s';
-					SVG.setAttribute('fill', "black")
+					SVG.setAttribute('fill', selectForegroundColor())
 
 		styleBar = (style, backgroundColor = "") =>
 			if backgroundColor == ""
@@ -367,7 +380,7 @@ class StatusBarLayer extends Layer
 			if style == "dark" && foregroundColor == ""
 				foregroundColor = "white"
 			styleBar(style, backgroundColor)
-			colorForeground(foregroundColor)
+			colorForeground()
 			colorBattery()
 
 		@applyStyle()
@@ -416,8 +429,8 @@ class StatusBarLayer extends Layer
 				when value is -90
 					deviceRotation = "Landscape (Clockwise)"
 				when value is 90
-					deviceRotation = "Landscape (Counterclockwise)" 
-			# Set deviceOrientation as deviceRotation	
+					deviceRotation = "Landscape (Counterclockwise)"
+			# Set deviceOrientation as deviceRotation
 			deviceOrientation = deviceRotation
 			@layout()
 		# Check whether the device is mobile or not (versus Framer)
@@ -425,7 +438,7 @@ class StatusBarLayer extends Layer
 			# Set type
 			device = "mobile"
 			# Add event listener on orientation change
-			window.addEventListener "orientationchange", -> 
+			window.addEventListener "orientationchange", ->
 				# Send event handling to function along with device type
 				updateOrientation(device)
 		else
