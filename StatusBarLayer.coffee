@@ -64,8 +64,6 @@ defaults =
 # iOS 11 battery stroke is 35%
 
 class StatusBarLayer extends Layer
-	fontWeight = 400
-	timeFontWeight = 500
 
 	batteryGreen = "#4cd964"
 	onCallColor = "#4cd964"
@@ -73,6 +71,7 @@ class StatusBarLayer extends Layer
 	constructor: (@options={}) ->
 		@options = _.assign({}, defaults, @options)
 
+		fontWeight = 400
 
 		isiPhonePlus = () ->
 			if _.includes(Framer.Device.deviceType, "plus")
@@ -82,37 +81,36 @@ class StatusBarLayer extends Layer
 
 		super @options
 
+		getTimeFontWeight = () =>
+			switch isiPhonePlus()
+				when true then return 600
+				else return 400
+
 		getTopMargin = () =>
 			switch isiPhonePlus()
-				when true then return 6
-				else return 4
+				when true then return 8
+				else return 5
 
 		getOnCallMargin = () =>
 			switch isiPhonePlus()
-				when true then return 35
+				when true then return 53
 				else return 38
-
-		getBatteryMargin = () =>
-			switch isiPhonePlus()
-				when true then return 16.5
-				else return 5.5
-
 
 		statusBarHeight = 20
 		topMargin = getTopMargin()
 		onCallMargin = topMargin + getOnCallMargin()
-		carrierMargin = 3
+		batteryMargin = 2.5
+		carrierMargin = if isiPhonePlus() then 2 else 4.5
 		signalMargin = 6.5
-		carrierMargin = 4.5
-		wifiMargin = if isiPhonePlus() == true then 8 else 2
+		wifiMargin = if isiPhonePlus() then -4 else 4
 		powerMargin = 5.5
 		percentageMargin = 2.5
 		alarmMargin = 6.5
 		locationMargin = 6
 		ipodMargin = 6
-		baseFontSize = 13
+		baseFontSize = 12
 		onCallFontSize = 13.5
-		letterSpacing = if isiPhonePlus() == true then 2 else 0
+		letterSpacing = if isiPhonePlus() then 2 else 0
 		onCallLetterSpacing = 0
 		onCallWordSpacing = 0
 
@@ -129,6 +127,7 @@ class StatusBarLayer extends Layer
 
 		getBatteryLevel = (defaultBatteryWidth) =>
 			percentageWidth = @options.percent / 100 * defaultBatteryWidth
+			percentageWidth = Math.round(percentageWidth)
 			return percentageWidth
 
 		signalSVG = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 16'><circle cx='2.75' cy='2.75' r='2.75' fill='#{@options.foregroundColor}' /><circle cx='9.75' cy='2.75' r='2.75' fill='#{@options.foregroundColor}' /><circle cx='16.75' cy='2.75' r='2.75' fill='#{@options.foregroundColor}' /><circle cx='23.75' cy='2.75' r='2.75' fill='#{@options.foregroundColor}' /><circle cx='30.75' cy='2.75' r='2.5' stroke='#{@options.foregroundColor}' stroke-width='0.5' fill-opacity='0' class='stroked' /></svg>"
@@ -136,7 +135,7 @@ class StatusBarLayer extends Layer
 		wifiSVG = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 36'><path d='M 8.085 13.63 L 11.995 18 L 15.905 13.63 C 13.752 11.454 10.238 11.454 8.085 13.63 Z M 4.085 9.16 L 6.085 11.39 C 9.376 8.192 14.614 8.192 17.905 11.39 L 19.905 9.16 C 15.479 4.943 8.521 4.943 4.095 9.16 Z M 11.995 0 C 7.576 0.001 3.322 1.681 0.095 4.7 L 2.095 6.93 C 7.659 1.691 16.341 1.691 21.905 6.93 L 23.905 4.7 C 20.676 1.678 16.418 -0.002 11.995 0 Z' fill='#{@options.foregroundColor}' /></svg>"
 		batterySVG = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 49 32'><rect x='0.5' y='0.5'  width='44' height='18' rx='3' ry='3' stroke='#{@options.foregroundColor}' fill-opacity='0' class='stroked' /><rect x='2' y='2' width='#{getBatteryLevel(41)}' height='15' rx='1.5' ry='1.5' fill='#{batteryColor}' id='batteryFill' /><path d='M46,6v7a3.28,3.28,0,0,0,3-3.5A3.28,3.28,0,0,0,46,6Z' fill='#{@options.foregroundColor}'/></svg>"
 		battery_iOS11_SVG = ""
-		battery3xSVG = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 73 29'><path d='M62,0H5A5,5,0,0,0,0,5V24a5,5,0,0,0,5,5H62a5,5,0,0,0,5-5V5A5,5,0,0,0,62,0Zm4,24a4,4,0,0,1-4,4H5a4,4,0,0,1-4-4V5A4,4,0,0,1,5,1H62a4,4,0,0,1,4,4Z' fill='#{@options.foregroundColor}' /><rect x='2' y='2' width='#{getBatteryLevel(63)}' height='25' rx='3' ry='3' fill='#{batteryColor}' id='batteryFill' /><path d='M69,10.06v9.89A4.82,4.82,0,0,0,73,15,4.82,4.82,0,0,0,69,10.06Z' fill='#{@options.foregroundColor}' /></svg>"
+		battery3xSVG = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 73 42'><path d='M62,0H5A5,5,0,0,0,0,5V24a5,5,0,0,0,5,5H62a5,5,0,0,0,5-5V5A5,5,0,0,0,62,0Zm4,24a4,4,0,0,1-4,4H5a4,4,0,0,1-4-4V5A4,4,0,0,1,5,1H62a4,4,0,0,1,4,4Z' fill='#{@options.foregroundColor}' /><rect x='2' y='2' width='#{getBatteryLevel(63)}' height='25' rx='3' ry='3' fill='#{batteryColor}' id='batteryFill' /><path d='M69,10.06v9.89A4.82,4.82,0,0,0,73,15,4.82,4.82,0,0,0,69,10.06Z' fill='#{@options.foregroundColor}' /></svg>"
 		battery3x_iOS11_SVG = ""
 		powerSVG = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 17'><polygon points='6 3.75 3.43 3.75 4.5 0 0.5 5.25 2.98 5.25 1.5 9.5 6 3.75' fill='#{@options.foregroundColor}' /></svg>"
 
@@ -216,7 +215,7 @@ class StatusBarLayer extends Layer
 				top: getTopMargin()
 			text: getTime()
 			fontSize: baseFontSize
-			fontWeight: timeFontWeight
+			fontWeight: getTimeFontWeight()
 			textAlign: "center"
 			letterSpacing: letterSpacing
 
@@ -238,7 +237,7 @@ class StatusBarLayer extends Layer
 			y: Align.center
 			width: 24.5
 			height: 10
-			html: if isiPhonePlus() == true then battery3xSVG else batterySVG
+			html: if isiPhonePlus() then battery3xSVG else batterySVG
 
 		@.battery = battery
 
@@ -308,7 +307,7 @@ class StatusBarLayer extends Layer
 				power.x = Align.right(-powerMargin)
 			else
 				power.x = Screen.width
-			battery.x = power.x - battery.width - getBatteryMargin()
+			battery.x = power.x - battery.width - batteryMargin
 			if @options.showPercentage == false
 				percentageMargin = 0
 				percentage.text = ""
