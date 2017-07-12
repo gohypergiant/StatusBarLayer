@@ -95,11 +95,19 @@ class StatusBarLayer extends Layer
 		getBatteryMargin = () =>
 			if @options.powered == false
 				if isiPhonePlus() and @options.version > 10
-					return 5.25
+					return 5
 				else
 					return 5.5
 			else
 				return 2.5
+
+		getBatteryWidth = () =>
+			if @options.version > 10 and isiPhonePlus()
+				return 26
+			else if @options.version > 10
+				return 26.5
+			else
+				return 24.5
 
 		getBatterySVG = () =>
 			size = if isiPhonePlus() then "at3x" else "at2x"
@@ -151,7 +159,7 @@ class StatusBarLayer extends Layer
 		battery_v10_2x = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 49 32'><rect x='0.5' y='0.5'  width='44' height='18' rx='3' ry='3' stroke='#{@options.foregroundColor}' fill-opacity='0' class='stroked' /><rect x='2' y='2' width='#{getBatteryLevel(41)}' height='15' rx='1.5' ry='1.5' fill='#{batteryColor}' id='batteryFill' /><path d='M46,6v7a3.28,3.28,0,0,0,3-3.5A3.28,3.28,0,0,0,46,6Z' fill='#{@options.foregroundColor}'/></svg>"
 		battery_v11_2x = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 53 32'><rect fill='#{@options.foregroundColor}' x='4' y='4' width='#{getBatteryLevel(40)}' height='15' rx='2' /><rect stroke='#{@options.foregroundColor}' fill-opacity='0' class='stroked' stroke-width='2' opacity='0.4' x='1' y='1' width='46' height='21' rx='5' /><path d='M50,7.25605856 C51.7477886,7.87381317 53,9.54067176 53,11.5 C53,13.4593282 51.7477886,15.1261868 50,15.7439414 L50,7.25605856 Z' fill='#{@options.foregroundColor}' opacity='0.4' /></svg>"
 		battery_v10_3x = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 73 42'><path d='M62,0H5A5,5,0,0,0,0,5V24a5,5,0,0,0,5,5H62a5,5,0,0,0,5-5V5A5,5,0,0,0,62,0Zm4,24a4,4,0,0,1-4,4H5a4,4,0,0,1-4-4V5A4,4,0,0,1,5,1H62a4,4,0,0,1,4,4Z' fill='#{@options.foregroundColor}' /><rect x='2' y='2' width='#{getBatteryLevel(63)}' height='25' rx='3' ry='3' fill='#{batteryColor}' id='batteryFill' /><path d='M69,10.06v9.89A4.82,4.82,0,0,0,73,15,4.82,4.82,0,0,0,69,10.06Z' fill='#{@options.foregroundColor}' /></svg>"
-		battery_v11_3x = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 79 42'><rect fill='#{batteryColor}' id='batteryFill' x='7.5' y='6' width='#{getBatteryLevel(59)}' height='22' rx='3' /><rect stroke='#{@options.foregroundColor}' fill-opacity='0' class='stroked' stroke-width='3' opacity='0.4' x='3.5' y='1.5' width='68' height='31' rx='7.5' /><path d='M 77 10.674 C 79.365 11.797 81 14.208 81 17 C 81 19.792 79.365 22.203 77 23.326 L 77 10.674 Z' fill='#{@options.foregroundColor}' opacity='0.4' /></svg>"
+		battery_v11_3x = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 78 42'><rect fill='#{batteryColor}' id='batteryFill' x='6' y='6' width='#{getBatteryLevel(59)}' height='22' rx='3' /><rect stroke='#{@options.foregroundColor}' fill-opacity='0' class='stroked' stroke-width='3' opacity='0.4' x='1.5' y='1.5' width='68' height='31' rx='7.5' /><path d='M 74 10.674 C 76.365 11.797 78 14.208 78 17 C 78 19.792 76.365 22.203 74 23.326 L 74 10.674 Z' fill='#{@options.foregroundColor}' opacity='0.4'/></svg>"
 		powerSVG = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 17'><polygon points='6 3.75 3.43 3.75 4.5 0 0.5 5.25 2.98 5.25 1.5 9.5 6 3.75' fill='#{@options.foregroundColor}' /></svg>"
 
 		svg =
@@ -268,7 +276,7 @@ class StatusBarLayer extends Layer
 			parent: @
 			name: "battery"
 			y: Align.center
-			width: if @options.version > 10 then 26.5 else 24.5
+			width: getBatteryWidth()
 			height: if @options.version > 10 then 11.5 else 9
 			html: getBatterySVG()
 
