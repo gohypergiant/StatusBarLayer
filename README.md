@@ -32,6 +32,9 @@ Instantiates a new instance of StatusBarLayer.
 
 ```coffeescript
 myStatusBar = new StatusBarLayer
+	# iOS version
+	version: <number> (10 || 11)
+	
 	# Text
 	carrier: <string>
 	time: <string> # if not set, will use local time
@@ -53,9 +56,6 @@ myStatusBar = new StatusBarLayer
 	# Behavior
 	hide: <boolean> # initial visibility
 	autoHide: <boolean> # hide in landscape where device-appropriate
-	
-	# Set @1x, @2x or @3x -- usually unnecessary
-	scaleFactor: <number> (1 || 2 || 3)
 ```
 	
 #### Simulate call

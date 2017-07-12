@@ -30,9 +30,6 @@
 		hide: <boolean> # initial visibility
 		autoHide: <boolean> # hide in landscape where device-appropriate
 
-		# Set @1x, @2x or @3x -- usually unnecessary
-		scaleFactor: <number> (1 || 2 || 3)
-
 		# Simulate call
 		myStatusBar.startCall(message, color) # <string>, <string> (hex or rgba)
 		myStatusBar.endCall()
