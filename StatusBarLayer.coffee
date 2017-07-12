@@ -315,9 +315,9 @@ class StatusBarLayer extends Layer
 			@.width = Screen.width
 			if @options.hide == true
 				@hide()
-			if Framer.Device.orientation > 0 && (Screen.width == 2208 || Screen.width == 1334 || Screen.width == 1136)
-				# Device is landscape iPhone
-				if @options.autoHide == true
+			else if @options.autoHide == true
+				if Framer.Device.orientation > 0 && (Screen.width == 2208 || Screen.width == 1334 || Screen.width == 1136 || Screen.width == 736 || Screen.width == 667)
+					# Device is landscape iPhone, should auto-hide
 					@hide()
 			else
 				@show()
