@@ -10,6 +10,13 @@ The StatusBarLayer module allows you to instantly generate an accurate status ba
 
 ### Installation
 
+#### NPM Installation
+
+```javascript
+$ cd /your/framer/project
+$ npm i @blackpixel/framer-statusbarlayer
+```
+
 #### Manual installation
 
 Copy or save the `StatusBarLayer.coffee` file into your project's `modules` folder.
