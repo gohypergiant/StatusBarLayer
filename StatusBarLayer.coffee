@@ -71,13 +71,21 @@ class StatusBarLayer extends Layer
 		fontWeight = 400
 		timeFontWeight = 600
 
+		super @options
+
+		@.isHidden = @options.hide
+
+		isiPhone = () ->
+			if _.includes(Framer.Device.deviceType, "iphone")
+				return true
+			else
+				return false
+
 		isiPhonePlus = () ->
 			if _.includes(Framer.Device.deviceType, "plus")
 				return true
 			else
 				return false
-
-		super @options
 
 		getTopMargin = () =>
 			switch isiPhonePlus()
@@ -296,7 +304,7 @@ class StatusBarLayer extends Layer
 			layer.backgroundColor = "clear"
 
 		@hide = () =>
-			@options.hide = true
+			@.isHidden = true
 			@.animate
 				properties:
 					y: 0 - statusBarHeight
@@ -304,21 +312,19 @@ class StatusBarLayer extends Layer
 					0.25
 
 		@show = () =>
-			@options.hide = false
+			@.isHidden = false
 			@.animate
 				properties:
 					y: 0
 				time:
 					0.25
 
-		@layout = () =>
+		@layout = (orientation = 0) =>
 			@.width = Screen.width
 			if @options.hide == true
 				@hide()
-			else if @options.autoHide == true
-				if Framer.Device.orientation > 0 && (Screen.width == 2208 || Screen.width == 1334 || Screen.width == 1136 || Screen.width == 736 || Screen.width == 667)
-					# Device is landscape iPhone, should auto-hide
-					@hide()
+			else if @options.autoHide == true && orientation > 0 && isiPhone()
+				@hide()
 			else
 				@show()
 			# Left-side items
@@ -448,45 +454,23 @@ class StatusBarLayer extends Layer
 					0.25
 			@applyStyle()
 
-		updateOrientation = (device) =>
-		# Setup value to be either Framer.Device.orientation if type is "Framer"
-		# Or window.orientation if device is on mobile
-			value = if device is "Framer" then Framer.Device.orientation else window.orientation
-			# Condition to match iOS
-			# In Framer, rotating to landscape makes it a negative rotation, not positive
-			# To be consistent, automatically making it set value correctly
-			if value < 0 && device is "Framer"
-				value = Math.abs(value)
-			# Switch to check the value
-			rotation = switch
-				when value is 0
-					deviceRotation = "Portrait"
-				when value is 180
-					deviceRotation = "Portrait (Upside-Down)"
-				when value is -90
-					deviceRotation = "Landscape (Clockwise)"
-				when value is 90
-					deviceRotation = "Landscape (Counterclockwise)"
-			# Set deviceOrientation as deviceRotation
-			deviceOrientation = deviceRotation
-			@layout()
 		# Check whether the device is mobile or not (versus Framer)
 		if Utils.isMobile()
 			# Set type
 			device = "mobile"
 			# Add event listener on orientation change
-			window.addEventListener "orientationchange", ->
+			window.addEventListener "orientationchange", =>
 				# Send event handling to function along with device type
-				updateOrientation(device)
+				@layout(window.orientation)
 		else
 			# Listen for orientation changes on the device view
-			Framer.Device.on "change:orientation", ->
+			Framer.Device.on "change:orientation", =>
 				# Set type
 				device = "Framer"
 				# Send event handling to function with device type
-				updateOrientation(device)
+				@layout(Math.abs(Framer.Device.orientation))
 
-	@define 'hidden', get: () -> @options.hide
+	@define 'hidden', get: () -> @.isHidden
 	@define 'onCall', get: () -> @options.onCall
 
 module.exports = StatusBarLayer
