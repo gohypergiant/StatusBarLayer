@@ -88,9 +88,12 @@ class StatusBarLayer extends Layer
 				return false
 
 		getTopMargin = () =>
-			switch isiPhonePlus()
-				when true then return 8
-				else return 5
+			if isiPhonePlus()
+				return 8
+			else if Utils.isMobile()
+				return 7
+			else
+				return 5
 
 		getOnCallMargin = () =>
 			switch isiPhonePlus()
