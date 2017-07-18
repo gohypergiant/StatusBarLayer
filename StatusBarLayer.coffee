@@ -122,6 +122,17 @@ class StatusBarLayer extends Layer
 			size = if isiPhonePlus() then "at3x" else "at2x"
 			return svg["signal"]["v" + @options.version][size]
 
+		getScreenWidth = () ->
+			orientation = 0
+			if Utils.isMobile()
+				orientation = window.orientation
+			else
+				orientation = Math.abs(Framer.Device.orientation)
+			if orientation == 0
+				return Math.min(Screen.width, Screen.height)
+			else
+				return Math.max(Screen.width, Screen.height)
+
 		statusBarHeight = 20
 		topMargin = getTopMargin()
 		onCallMargin = topMargin + getOnCallMargin()
@@ -320,7 +331,8 @@ class StatusBarLayer extends Layer
 					0.25
 
 		@layout = (orientation = 0) =>
-			@.width = Screen.width
+			layoutWidth = getScreenWidth()
+			@.width = layoutWidth
 			if @options.hide == true
 				@hide()
 			else if @options.autoHide == true && orientation > 0 && isiPhone()
@@ -343,14 +355,14 @@ class StatusBarLayer extends Layer
 				wifi.visible = false
 			wifi.x = carrier.x + carrier.width + wifiMargin
 			# Center current time and on-call
-			time.width = Screen.width
-			onCallBlock.width = Screen.width
-			onCallMessage.width = Screen.width
+			time.width = layoutWidth
+			onCallBlock.width = layoutWidth
+			onCallMessage.width = layoutWidth
 			# Right-side items
 			if @options.powered == true
 				power.x = Align.right(-powerMargin)
 			else
-				power.x = Screen.width
+				power.x = layoutWidth
 			battery.x = power.x - battery.width - getBatteryMargin()
 			if @options.showPercentage == false
 				percentageMargin = 0
@@ -362,7 +374,7 @@ class StatusBarLayer extends Layer
 		getTime()
 		@layout()
 
-		foregroundItems = [percentage, power, time, wifi, signal, carrier, battery]
+		# end layout()
 
 		selectForegroundColor = () =>
 			if @options.foregroundColor == ""
@@ -372,6 +384,8 @@ class StatusBarLayer extends Layer
 					return "black"
 			else
 				return @options.foregroundColor
+
+		foregroundItems = [percentage, power, time, wifi, signal, carrier, battery]
 
 		colorForeground = (color = "") =>
 			if color == "" then color = selectForegroundColor()
