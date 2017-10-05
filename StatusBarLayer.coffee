@@ -68,8 +68,7 @@ class StatusBarLayer extends Layer
 	constructor: (@options={}) ->
 		@options = _.assign({}, defaults, @options)
 
-		fontWeight = 400
-		timeFontWeight = 600
+
 
 		super @options
 
@@ -86,19 +85,6 @@ class StatusBarLayer extends Layer
 				return true
 			else
 				return false
-
-		getTopMargin = () =>
-			if isiPhonePlus()
-				return 8
-			else if Utils.isMobile()
-				return 3
-			else
-				return 3
-
-		getOnCallMargin = () =>
-			switch isiPhonePlus()
-				when true then return 53
-				else return 38
 
 		getBatteryMargin = () =>
 			if @options.powered == false
@@ -136,12 +122,13 @@ class StatusBarLayer extends Layer
 			else
 				return Math.max(Screen.width, Screen.height)
 
+		topMargin = 3
+		onCallMargin = 18
 		statusBarHeight = 20
-		topMargin = getTopMargin()
-		onCallMargin = topMargin + getOnCallMargin()
-		carrierMargin = if isiPhonePlus() then 2 else 4.5
+		onCallMargin = topMargin + onCallMargin
+		carrierMargin = 4.5
 		signalMargin = if isiPhonePlus() then 6 else 6.5
-		wifiMargin = if isiPhonePlus() then -4 else 4
+		wifiMargin = 4
 		powerMargin = 5.5
 		percentageMargin = 2.5
 		alarmMargin = 6.5
@@ -149,9 +136,12 @@ class StatusBarLayer extends Layer
 		ipodMargin = 6
 		baseFontSize = 12
 		onCallFontSize = 13.5
-		letterSpacing = if isiPhonePlus() then 2 else 0
+		letterSpacing = 0
+		timeLetterSpacing = if isiPhonePlus() then 1 else 0
 		onCallLetterSpacing = 0
 		onCallWordSpacing = 0
+		fontWeight = if isiPhonePlus() then 300 else 400
+		timeFontWeight = 500
 
 		@.height = statusBarHeight
 
@@ -234,7 +224,7 @@ class StatusBarLayer extends Layer
 			parent: @
 			name: "carrier"
 			padding:
-				top: getTopMargin()
+				top: topMargin
 			text: @options.carrier
 			fontSize: baseFontSize
 			fontWeight: fontWeight
@@ -281,12 +271,12 @@ class StatusBarLayer extends Layer
 			name: "time"
 			width: @.width
 			padding:
-				top: getTopMargin()
+				top: topMargin
 			text: getTime()
 			fontSize: baseFontSize
 			fontWeight: timeFontWeight
 			textAlign: "center"
-			letterSpacing: letterSpacing
+			letterSpacing: timeLetterSpacing
 
 		@.time = time
 
@@ -314,7 +304,7 @@ class StatusBarLayer extends Layer
 			parent: @
 			name: "percentage"
 			padding:
-				top: getTopMargin()
+				top: topMargin
 			text: @options.percent + "%"
 			fontSize: baseFontSize
 			fontWeight: fontWeight
