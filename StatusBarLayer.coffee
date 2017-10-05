@@ -68,8 +68,6 @@ class StatusBarLayer extends Layer
 	constructor: (@options={}) ->
 		@options = _.assign({}, defaults, @options)
 
-
-
 		super @options
 
 		@.isHidden = @options.hide
@@ -112,15 +110,18 @@ class StatusBarLayer extends Layer
 			return svg["signal"]["v" + @options.version][size]
 
 		getScreenWidth = () ->
-			orientation = 0
-			if Utils.isMobile()
-				orientation = window.orientation
+			if _.includes(Framer.Device.deviceType, "apple")
+				orientation = 0
+				if Utils.isMobile()
+					orientation = window.orientation
+				else
+					orientation = Math.abs(Framer.Device.orientation)
+				if orientation == 0
+					return Math.min(Screen.width, Screen.height)
+				else
+					return Math.max(Screen.width, Screen.height)
 			else
-				orientation = Math.abs(Framer.Device.orientation)
-			if orientation == 0
-				return Math.min(Screen.width, Screen.height)
-			else
-				return Math.max(Screen.width, Screen.height)
+				return Screen.width
 
 		topMargin = 3
 		onCallMargin = 18
@@ -159,7 +160,7 @@ class StatusBarLayer extends Layer
 			percentageWidth = Math.round(percentageWidth)
 			return percentageWidth
 
-		svgCSS = """
+		appleSVGCSS = """
 			.svgFit {
 			  object-fit: contain;
 			  width: 100%;
@@ -168,6 +169,18 @@ class StatusBarLayer extends Layer
 			  max-height: 100%;
 			}
 			"""
+
+		canvasSVGCSS = """
+			.svgFit {
+			  object-fit: contain;
+			  width: 100%;
+			  max-width: 100%;
+			  position: absolute;
+			  top: 0;
+			}
+			"""
+		svgCSS = if _.includes(Framer.Device.deviceType, "apple") then appleSVGCSS else canvasSVGCSS
+		
 		Utils.insertCSS(svgCSS)
 		signal_v10_2x = "<svg xmlns='http://www.w3.org/2000/svg' class='svgFit' viewBox='0 0 34 16'><circle cx='2.75' cy='2.75' r='2.75' fill='#{@options.foregroundColor}' /><circle cx='9.75' cy='2.75' r='2.75' fill='#{@options.foregroundColor}' /><circle cx='16.75' cy='2.75' r='2.75' fill='#{@options.foregroundColor}' /><circle cx='23.75' cy='2.75' r='2.75' fill='#{@options.foregroundColor}' /><circle cx='30.75' cy='2.75' r='2.5' stroke='#{@options.foregroundColor}' stroke-width='0.5' fill-opacity='0' class='stroked' /></svg>"
 		signal_v11_2x = "<svg xmlns='http://www.w3.org/2000/svg' class='svgFit' viewBox='0 0 33 33'><rect x='0' y='11' width='6' height='9' rx='2' fill='#{@options.foregroundColor}' /><rect x='9' y='8' width='6' height='12' rx='2' fill='#{@options.foregroundColor}' /><rect x='18' y='4' width='6' height='16' rx='2' fill='#{@options.foregroundColor}' /><rect x='27' y='0' width='6' height='20' rx='2' fill='#{@options.foregroundColor}' /></svg>"
