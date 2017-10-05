@@ -1,6 +1,6 @@
 {
   "name": "@blackpixel/framer-statusbarlayer",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Instantly generate an accurate status bar for your iPhone and iPad app prototypes.",
   "homepage": "https://github.com/bpxl-labs/StatusBarLayer",
   "repository": {
