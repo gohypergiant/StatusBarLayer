@@ -1,0 +1,11 @@
+{
+    "name": "StatusBarLayer",
+    "description": "Generates an accurate, customizable status bar for iOS app prototypes.",
+    "author": "John Marstall",
+
+    "require": "StatusBarLayer = require 'StatusBarLayer'",
+    "install": "StatusBarLayer.coffee",
+    "example": "example.coffee",
+
+    "thumb": "thumb.png"
+}
