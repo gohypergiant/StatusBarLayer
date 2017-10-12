@@ -4,7 +4,10 @@
     "author": "John Marstall",
 
     "require": "StatusBarLayer = require 'StatusBarLayer'",
-    "install": "StatusBarLayer.coffee",
+		"install": [
+		"StatusBarLayer.coffee",
+			"README.md"
+		],
     "example": "example.coffee",
 
     "thumb": "thumb.png"
