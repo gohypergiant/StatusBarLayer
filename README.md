@@ -27,8 +27,11 @@ Copy or save the `StatusBarLayer.coffee` file into your project's `modules` fold
 
 In your Framer project, add the following:
 
-```javascript
+```coffeescript
+# If you manually installed
 StatusBarLayer = require "StatusBarLayer"
+# else
+StatusBarLayer = require "@blackpixel/framer-statusbarlayer"
 ```
 
 ### API
