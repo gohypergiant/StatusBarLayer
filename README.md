@@ -4,7 +4,7 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](.github/CONTRIBUTING.md)
 [![Maintenance](https://img.shields.io/maintenance/yes/2017.svg)]()
 
-<a href="https://open.framermodules.com/mapboxlayer"><img alt="Install with Framer Modules" src="https://www.framermodules.com/assets/badge@2x.png" width='160' height='40' /></a>
+<a href="https://open.framermodules.com/statusbarlayer"><img alt="Install with Framer Modules" src="https://www.framermodules.com/assets/badge@2x.png" width='160' height='40' /></a>
 
 The StatusBarLayer module allows you to instantly generate an accurate status bar for your iPhone and iPad app prototypes. Appearance and status items are customizable, and the module will mimic iOS orientation-switch behavior according to device type. Events that affect the status bar, such as calls, may also be simulated.
 
