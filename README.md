@@ -88,7 +88,7 @@ print myStatusBar.hidden
 print myStatusBar.onCall
 ```
 
-#### Example project
+### Example project
 [Download](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/bpxl-labs/StatusBarLayer/tree/master/example.framer) the example to try it for yourself.
 
 ---
