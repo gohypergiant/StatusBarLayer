@@ -50,6 +50,7 @@ myStatusBar = new StatusBarLayer
 	# Text
 	carrier: <string>
 	time: <string> # if not set, will use local time
+	hours24: <boolean> # 12-hours format is the default
 	percent: <number>
 	
 	# Show or hide status items

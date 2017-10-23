@@ -56,6 +56,7 @@ defaults =
 	onCall: false
 	vibrant: false
 	version: 11
+	hours24: false
 
 # iOS 11 unfilled signal bar is 25%
 # iOS 11 battery stroke is 35%
@@ -272,10 +273,10 @@ class StatusBarLayer extends Layer
 			minute = today.getMinutes()
 			second = today.getSeconds()
 			suffix = if hour >= 12 then ' PM' else ' AM'
-			hour = if hour > 12 then hour - 12 else hour
+			hour = if !@options.hours24 and hour > 12 then hour - 12 else hour
 			minute = if minute < 10 then "0" + minute else minute
 			if @options.time == ""
-				return hour + ':' + minute + suffix
+				return hour + ':' + minute + (if !@options.hours24 then suffix else '')
 			else
 				return @options.time
 
